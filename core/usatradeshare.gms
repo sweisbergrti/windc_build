@@ -1,7 +1,7 @@
 $TITLE GAMS routine for merging USA Trade Online data into build
 
 $SET sep %system.dirsep%
-
+$set gdxdir  gdx%sep%
 
 SET sr "Super Regions in WiNDC Database";
 SET r(sr) "Regions in WiNDC Database";
@@ -63,9 +63,32 @@ PARAMETER shrchk "Comparison between imports and exports";
 shrchk(s,t) = usatrd_shr('2014','CA',s,t);
 DISPLAY shrchk;
 
+* -------------------------------------------------------------------------
+* add export shares from usda for the agricultural sector
+* -------------------------------------------------------------------------
+
+parameter
+    usda(r,*)    state level exports from usda of total agricultural output;
+
+$call 'csv2gdx new_data%sep%usda%sep%usda_time_series_exports.csv output=%gdxdir%usda_time_series_exports.gdx id=usda useheader=yes index=(1,2) value=3 CheckDate=yes';
+$gdxin '%gdxdir%usda_time_series_exports.gdx'
+$load usda
+
+parameter
+    comp;
+comp(yr,r,'census') = usatrd_shr(yr,r,'agr','exports');
+comp(yr,r,'usda') = usda(r,yr) / sum(r.local, usda(r,yr));
+display comp;
+
+* assign trade for agriculture to be based on usda shares:
+
+usatrd_shr(yr,r,'agr','exports') = usda(r,yr) / sum(r.local, usda(r,yr));
+
+
+* -------------------------------------------------------------------------
 
 * Verify all shares sum to 1:
 ABORT$(smax((yr,s), round(sum(r, usatrd_shr(yr,r,s,'exports')), 4)) <> 1) "Export shares don't sum to 1.";
 ABORT$(smax((yr,s), round(sum(r, usatrd_shr(yr,r,s,'imports')), 4)) <> 1) "Import shares don't sum to 1.";
 
-EXECUTE_UNLOAD 'gdx%sep%shares_usatrd.gdx' usatrd_shr, notinc;
+EXECUTE_UNLOAD '%gdxdir%shares_usatrd.gdx' usatrd_shr, notinc;

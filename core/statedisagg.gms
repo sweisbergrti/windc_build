@@ -277,6 +277,7 @@ PARAMETER rx0_(yr,r,g) "Re-exports";
 SET notrd(yr,g) "Goods not included in trade data";
 
 notrd(yr,g) = yes$(not sum(r, usatrd_shr(yr,r,g,'exports')));
+
 x0_(yr,r,g) = usatrd_shr(yr,r,g,'exports') * x_0(yr,g);
 x0_(yr,r,g)$notrd(yr,g) = region_shr(yr,r,g) * x_0(yr,g);
 
@@ -467,8 +468,6 @@ $INCLUDE STATEMODEL.GEN
 SOLVE statemodel using mcp;
 ABORT$(statemodel.objval > 1e-5) "Error in benchmark calibration with regional data.";
 
-display ty0;
-
 * -------------------------------------------------------------------
 * Output regionalized dataset:
 * -------------------------------------------------------------------
@@ -493,7 +492,7 @@ yh0_,fe0_,cd0_,c0_,i0_,g0_,bopdef0_,hhadj_,
 * Trade data:
 
 s0_,xd0_,xn0_,x0_,rx0_,a0_,nd0_,dd0_,m0_,ta0_,tm0_,
-g
+
 * Margins:
 
 md0_,nm0_,dm0_;

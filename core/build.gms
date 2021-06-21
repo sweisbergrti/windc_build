@@ -1,11 +1,12 @@
 *		  Build Routine for the WiNDC Core Dataset
 *
-*	Comment out the following line to run the full build routine!
+*        Authors: Andrew Schreiber, Thomas Rutherford, Adam Christensen
+
+* 	Comment out the following line to run the full build routine!
 
 *.$set runscript calibrate
+$set start gspshare
 
-* Authors: Andrew Schreiber, Thomas Rutherford, Adam Christensen
-*
 * ------------------------------------------------------------------------------
 
 $SET sep %system.dirsep%
